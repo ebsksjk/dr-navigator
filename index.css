@@ -1,0 +1,53 @@
+.title {
+    text-align: center;
+    font-size: 7rem;
+    color: #005E2E;
+    margin-top: 0;
+    padding-top: 1%;
+    top: 15px;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.period {
+    font-size: 8rem;
+    color: #3b4a3f;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.station-search {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body {
+    margin: 0;
+    background-color: #f1fcf3;
+}
+
+a {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: #3b4a3f;
+}
+
+a:visited {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: #11a65c;
+}
+
+@media (orientation: portrait) {
+    .title {
+        text-align: center;
+        font-size: 10vw;
+    }
+
+    .period {
+        font-size: 18vw;
+    }
+}

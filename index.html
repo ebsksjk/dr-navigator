@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>dr-navigator</title>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <h1 class="title">dr-navigator<span class="period">.</span></h1>
+            <div class="station-search">
+                <h1>Suche nach Stationskürzel</h1>
+                <table class="station-search">
+                    <tr>
+                        <th>Name der Station:</th>
+                        <th>Kürzel der Station</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" id="stationName" /></th>
+                        <th><input type="text" id="stationID" value="" disabled={true} /></th>
+                    </tr>
+                </table>
+                <button id="searchStation" onClick="searchStation()">Suchen</button>
+            </div>
+        <a href="viewStations.php">Alle bisher im System hinterlegten Stationen</a>
+        <br/>
+        <a href="viewRoute.php?RID=912">Die bisher im System hinterlegten Routen</a>
+        
+        <p class="copyright">ein Service der Rbd Cottbus</p>
+        </div>
+    </body>
+
+    <script>
+        function searchStation() {
+            let lookup = document.getElementById('stationName').value;
+            
+            document.getElementById('searchStation').disabled = true;
+
+            fetch('getR100.php?station=' + lookup)
+            .then((response) => response.text())
+            .then((text) => {
+                document.getElementById('stationID').value = text;
+                document.getElementById('searchStation').disabled = false;
+        })
+        }
+    </script>
+
+</html>
