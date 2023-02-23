@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="table.css">
+<link rel="stylesheet" href="styles/table.css">
 <title>dr-navigator - Fahrplan</title>
 
 <?php
     $station = $_GET["SR100"];
 
-    require('DBConnect.php');
+    require('tools/DBConnect.php');
 
     if ($station == NULL) {
         echo '<h1 class="title">Dieser Bahnhof existiert leider nicht.</h1>';

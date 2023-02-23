@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="table.css">
+<link rel="stylesheet" href="styles/table.css">
 <title>dr-navigator - Zuginformationen</title>
 
 <?php
     $trainID = $_GET['TID'];
 
-    require('DBConnect.php');
+    require('tools/DBConnect.php');
 
     if($trainID == NULL) {
         echo '<h1> Dieser Zug wurde nicht gefunden. </h1>';

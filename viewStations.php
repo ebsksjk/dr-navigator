@@ -1,10 +1,10 @@
-<link rel="stylesheet" href="table.css">
+<link rel="stylesheet" href="styles/table.css">
 <title>dr-navigator - Stationen</title>
 
 <table class="result-table">
     <?php
 
-        require('DBConnect.php');
+        require('tools/DBConnect.php');
         echo '<tr><th class="title">R100</th><th class="title">Stationsname</th></tr>';
 
         foreach($DBASE->query("SELECT * FROM Stations;") as $row) {
