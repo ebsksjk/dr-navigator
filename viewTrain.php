@@ -4,7 +4,7 @@
 <?php
     $trainID = $_GET['TID'];
 
-    require('tools/DBConnect.php');
+    require('DBConnect.php');
 
     if($trainID == NULL) {
         echo '<h1> Dieser Zug wurde nicht gefunden. </h1>';

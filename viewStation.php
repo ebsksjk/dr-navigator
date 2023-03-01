@@ -4,7 +4,7 @@
 <?php
     $station = $_GET["SR100"];
 
-    require('tools/DBConnect.php');
+    require('DBConnect.php');
 
     if ($station == NULL) {
         echo '<h1 class="title">Dieser Bahnhof existiert leider nicht.</h1>';

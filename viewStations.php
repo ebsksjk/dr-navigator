@@ -4,7 +4,7 @@
 <table class="result-table">
     <?php
 
-        require('tools/DBConnect.php');
+        require('DBConnect.php');
         echo '<tr><th class="title">R100</th><th class="title">Stationsname</th></tr>';
 
         foreach($DBASE->query("SELECT * FROM Stations;") as $row) {
