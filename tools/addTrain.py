@@ -1,7 +1,9 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import simpledialog
+from datetime import datetime, timedelta
 import sqlite3
+import os
 
 ##################################
 def addStops(n):
@@ -10,20 +12,27 @@ def addStops(n):
         stopList.append([Entry(frame), Entry(frame), Entry(frame)])
 #################################
 def addStop():
+    global frame
     addStops(1)
+    buildFrame(frame)
 #################################
 def saveStops():
     global stopList, tId, tVon, tNach
+    cur = dbase.cursor()
 
     if(tID.get() == ''):
         messagebox.showerror(title=None, message="Es wurde keine Zugnummer angegeben!")
         return
 
     print("Zug {} von {} nach {}".format(tID.get(), tVon.get(), tNach.get()))
+    cur.execute("INSERT INTO Trains (ID, Von, Nach) VALUES(?, ?, ?)", (tID.get(), tVon.get(), tNach.get(),))
+    dbase.commit()
 
     for i in stopList:
         if(not i[0].get() == ''):
-            print("{}, Ankunft: {}, Abfahrt: {}".format(i[0].get(), i[1].get(), i[2].get())) 
+            print("{}, {}, {}, {}".format(tID.get(), i[0].get(), i[1].get(), i[2].get()))
+            cur.execute("INSERT INTO Stops (TID, SR100, Arrival, Departure) VALUES(?, ?, ?, ?)", (tID.get(), i[0].get(), i[1].get(), i[2].get(),))
+            dbase.commit() 
 #################################
 def clearStops():
     global stopList, tID
@@ -35,21 +44,26 @@ def clearStops():
             i[1].delete(0, END)
             i[2].delete(0, END)
 ##################################
+def calcTimes():
+    global stopList
+
+    minute = timedelta(minutes=1)
+
+    for i in stopList:
+        if(not i[0].get() == ''):
+            if(i[2].get() == ''):
+                if(i[1].get() == ''):
+                    continue
+                i[2].insert(-1, (datetime.strptime(i[1].get(), '%H:%M') + minute).strftime('%H:%M'))
+##################################
 def loadRoute():
     global stopList, tVon, tNach
+
     route = simpledialog.askstring(title="Route", prompt="Gebe Routen-ID ein:")
-    cur = dbase.cursor()
+    if route == '':
+        return
     
-    cur.execute("SELECT * FROM Routes WHERE ID=?", (route,))
-    rows = cur.fetchall()
-    print(rows)
-    tVon.delete(0, END)
-    tNach.delete(0, END)
-
-    for row in rows:
-        tVon.insert(-1, row[2])
-        tNach.insert(-1, row[3])
-
+    cur = dbase.cursor()
     cur.execute("SELECT SR100 FROM Waypoints WHERE ROID=?", (route,))
     rows = cur.fetchall()
     
@@ -59,12 +73,16 @@ def loadRoute():
         diff = len(rows) - len(stopList)
         
         addStops(diff)
-        resetFrame()
+        buildFrame(frame)
         
     if(len(stopList) > len(rows)):
+        print("Weniger Rows!")
+        print("Differenz: {}".format(len(rows) - len(stopList)))
+
         stopList = []
-        addStops(len(rows))        
         resetFrame()
+        addStops(len(rows))        
+        buildFrame(frame)
     
     x = 0
     for i in stopList:
@@ -72,7 +90,15 @@ def loadRoute():
         i[0].insert(-1, rows[x])
         print(rows[x])
         x = x + 1
-    
+
+    cur.execute("SELECT * FROM Routes WHERE ID=?", (route,))
+    rows = cur.fetchall()
+    tVon.delete(0, END)
+    tNach.delete(0, END)
+
+    for row in rows:
+        tVon.insert(-1, row[2])
+        tNach.insert(-1, row[3])
 ##################################
 def buildFrame(frame):
     global stopList
@@ -90,6 +116,7 @@ def buildFrame(frame):
     bSend = Button(frame, text="Speichern", command=saveStops)
     bClear = Button(frame, text="Werte löschen", command=clearStops)
     bLoad = Button(frame, text="Lade Strecke", command=loadRoute)
+    bCalc = Button(frame, text="Fehlende Zeiten berechnen", command=calcTimes)
 
     tID = Entry(frame)
     tVon = Entry(frame)
@@ -107,13 +134,11 @@ def buildFrame(frame):
     bAdd.grid(row=1, column=3)
     bSend.grid(row=999, column=3)
     bClear.grid(row=999, column=0)
+    bCalc.grid(row=999, column=1)
     bLoad.grid(row=0, column=0)
 
     y = 4
     x = 0
-    print(stopList)
-    print(len(stopList))
-    
     for i in stopList:
         for u in i:
             u.grid(row=y, column=x)
@@ -124,18 +149,15 @@ def buildFrame(frame):
 ##################################
 def resetFrame():
     global frame
-
     frame.destroy()
     frame = Label(root)
-    frame = buildFrame(root)
-    frame.pack()
+    frame.grid()
 ##################################
 root = Tk()
 tID = None
 tVon = None
 tNach = None
-
-dbase = sqlite3.connect('../content/Reichsbahn.db3')
+dbase = sqlite3.connect(os.path.join('Reichsbahn.db3'))
 
 stopList=[]
 
@@ -143,8 +165,6 @@ frame = Frame(root)
 buildFrame(frame)
 
 frame.pack()
-
-
 
 if __name__ == '__main__':
     root.mainloop()
