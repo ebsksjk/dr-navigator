@@ -43,6 +43,9 @@ def clearStops():
         if(not i[0].get() == ''):
             i[1].delete(0, END)
             i[2].delete(0, END)
+
+    stopList[0][1].insert(-1, "START")
+    stopList[-1][2].insert(-1, "END")
 ##################################
 def calcTimes():
     global stopList
@@ -99,6 +102,9 @@ def loadRoute():
     for row in rows:
         tVon.insert(-1, row[2])
         tNach.insert(-1, row[3])
+
+    stopList[0][1].insert(-1, "START")
+    stopList[-1][2].insert(-1, "END")
 ##################################
 def buildFrame(frame):
     global stopList
@@ -131,8 +137,8 @@ def buildFrame(frame):
     tStop.grid(row=3, column=0)
     tArr.grid(row=3, column=1)
     tDep.grid(row=3, column=2)
-    bAdd.grid(row=1, column=3)
-    bSend.grid(row=999, column=3)
+    bAdd.grid(row=0, column=2)
+    bSend.grid(row=999, column=2)
     bClear.grid(row=999, column=0)
     bCalc.grid(row=999, column=1)
     bLoad.grid(row=0, column=0)
@@ -157,7 +163,7 @@ root = Tk()
 tID = None
 tVon = None
 tNach = None
-dbase = sqlite3.connect(os.path.join('Reichsbahn.db3'))
+dbase = sqlite3.connect(os.path.join('..','Reichsbahn.db3'))
 
 stopList=[]
 
