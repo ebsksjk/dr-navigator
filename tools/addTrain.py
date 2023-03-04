@@ -60,7 +60,7 @@ def calcTimes():
                 i[2].insert(-1, (datetime.strptime(i[1].get(), '%H:%M') + minute).strftime('%H:%M'))
 ##################################
 def loadRoute():
-    global stopList, tVon, tNach
+    global stopList, tVon, tNach, stops
 
     route = simpledialog.askstring(title="Route", prompt="Gebe Routen-ID ein:")
     if route == '':
@@ -69,6 +69,8 @@ def loadRoute():
     cur = dbase.cursor()
     cur.execute("SELECT SR100 FROM Waypoints WHERE ROID=?", (route,))
     rows = cur.fetchall()
+
+    stops = rows
     
     if (len(stopList) < len(rows)):
         print("Mehr Rows!")
@@ -91,7 +93,7 @@ def loadRoute():
     for i in stopList:
         i[0].delete(0, END)
         i[0].insert(-1, rows[x])
-        print(rows[x])
+        #print(rows[x])
         x = x + 1
 
     cur.execute("SELECT * FROM Routes WHERE ID=?", (route,))
@@ -105,6 +107,24 @@ def loadRoute():
 
     stopList[0][1].insert(-1, "START")
     stopList[-1][2].insert(-1, "END")
+##################################
+def reverseRoute():
+    global stops, tVon, tNach, stopList
+
+    x = 0
+    for i in reversed(stops):
+        stopList[x][0].delete(0, END)
+        stopList[x][0].insert(-1, i)
+
+        x = x + 1
+
+    stops.reverse()
+
+    y = tVon.get()
+    tVon.delete(0, END)
+    tVon.insert(-1, tNach.get())
+    tNach.delete(0, END)
+    tNach.insert(-1, y)
 ##################################
 def buildFrame(frame):
     global stopList
@@ -123,6 +143,7 @@ def buildFrame(frame):
     bClear = Button(frame, text="Werte löschen", command=clearStops)
     bLoad = Button(frame, text="Lade Strecke", command=loadRoute)
     bCalc = Button(frame, text="Fehlende Zeiten berechnen", command=calcTimes)
+    bRev = Button(frame, text="Strecke umkehren", command=reverseRoute)
 
     tID = Entry(frame)
     tVon = Entry(frame)
@@ -142,6 +163,7 @@ def buildFrame(frame):
     bClear.grid(row=999, column=0)
     bCalc.grid(row=999, column=1)
     bLoad.grid(row=0, column=0)
+    bRev.grid(row=0, column=1)
 
     y = 4
     x = 0
@@ -166,6 +188,7 @@ tNach = None
 dbase = sqlite3.connect(os.path.join('..','Reichsbahn.db3'))
 
 stopList=[]
+stops=[]
 
 frame = Frame(root)
 buildFrame(frame)
