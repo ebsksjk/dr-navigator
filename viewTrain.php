@@ -18,6 +18,7 @@
     INNER JOIN Stations AS s2 ON T.Nach=s2.R100
     WHERE ID="'.$trainID.'"') as $row)  {
         echo '<h1 class="title">Zug '.$row['ID'].' von '.$row['Von'].' nach '.$row['Nach'].'</h1>';
+        
     }
 
     echo '<table class="result-table">';
