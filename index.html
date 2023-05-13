@@ -14,10 +14,9 @@
                     </tr>
                     <tr>
                         <th><input type="text" id="stationName" /></th>
-                        <th><input type="text" id="stationID" value="" disabled={true} /></th>
+                        <th><div id="stationID"><p align="right"></p></div></th>
                     </tr>
                 </table>
-                <button id="searchStation" onClick="searchStation()">Suchen</button>
             </div>
         <a href="viewStations.php">Alle bisher im System hinterlegten Stationen</a>
         <br/>
@@ -26,20 +25,30 @@
         <p class="copyright">ein Service der Rbd Cottbus</p>
         </div>
     </body>
-
+    
     <script>
-        function searchStation() {
-            let lookup = document.getElementById('stationName').value;
-            
-            document.getElementById('searchStation').disabled = true;
+        document.getElementById("stationName").addEventListener('input', suggestStation);
+        let initialState ="";
 
-            fetch('getR100.php?station=' + lookup)
-            .then((response) => response.text())
-            .then((text) => {
-                document.getElementById('stationID').value = text;
-                document.getElementById('searchStation').disabled = false;
-        })
+        function suggestStation() {
+            let suggest = document.getElementById('stationID').firstChild;
+            let lookup = document.getElementById('stationName').value;
+
+            if(lookup != initialState && (lookup.replace(/\s/g, '').length)) {
+                initialState = lookup;
+
+                fetch('searchStations.php?query=' + initialState)
+                    .then((response) => response.text())
+                    .then((text) => {
+                        //console.log("Search query: " + initialSuggState);
+                        //console.log(text);
+                        suggest.innerText = text;
+                })
+            } else {
+                suggest.innerHTML  = "";
+            }
         }
+
     </script>
 
 </html>
